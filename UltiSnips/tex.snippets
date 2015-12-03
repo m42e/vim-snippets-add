@@ -1,0 +1,27 @@
+snippet recipe "Recipe Prototype"
+\documentclass[12pt,a5paper,landscape,oneside]{scrreprt}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage[ngerman]{babel}
+\usepackage{xreceipecards}
+\usepackage[a5paper,noheadfoot,top=7mm,left=7mm,right=7mm,bottom=7mm]{geometry}
+
+\begin{document}
+\pagestyle{empty}
+\begin{recipe}
+	\recipetitle{${1}}
+	\recipesubtitle{${2}}
+	\ingredient{}
+	\begin{instructions}
+	${3}
+	\end{instructions}
+\end{recipe}
+\end{document}
+endsnippet
+
+snippet ing "Ingredient"
+	\ingredient{$1}
+endsnippet
+
+
+# vim:ft=snippets:
