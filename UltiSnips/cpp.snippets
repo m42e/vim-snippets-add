@@ -1,3 +1,4 @@
+priority 10
 global !p
 import os
 def getPathInProject(path):
@@ -5,11 +6,22 @@ def getPathInProject(path):
 	origpath = os.path.dirname(path)
 	while not os.path.exists(os.path.join(path, '.git')) and path != '/' and path != '\\':
 		path = os.path.abspath(os.path.join(path, os.pardir))
-	return origpath.replace(path, '');
+	return origpath.replace(path.replace('\\', '/')+'/', '');
 endglobal
 
-snippet myonce "#ifndef ... #define ... #endif"
+snippet ifndef "#ifndef ... #define ... #endif"
 #ifndef ${1:`!p snip.rv = (getPathInProject(path).replace('/','_') + '_' + snip.basename + '_h_').upper()`}
-#define ${1}
-#endif
+#define $1
+${VISUAL}
+#endif // $1
+endsnippet
+
+snippet ns "namespace .. (namespace)"
+namespace${1/.+/ /m}${1:`!p snip.rv = snip.basename or "name"`} {
+	${VISUAL}${0}
+}${1/.+/ \/\/ namespace /m}$1
+endsnippet
+
+snippet cr "copyright"
+// Copyright `!v strftime("%Y")` `!v g:snip_author`
 endsnippet
