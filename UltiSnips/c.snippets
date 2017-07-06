@@ -9,4 +9,65 @@ snippet pout "[Doxygen] Parameter out"
 * $0
 endsnippet
 
+
+snippet exc "extern c"
+#ifdef __cplusplus
+extern "C" {
+#endif
+endsnippet
+
+snippet exce "extern c"
+#ifdef __cplusplus
+}
+#endif
+endsnippet
+snippet externc "extern c"
+#ifdef __cplusplus
+extern "C" {
+#endif
+$0
+#ifdef __cplusplus
+}
+#endif
+endsnippet
+
+snippet seci "section includes"
+/*------------------------------------------------------------------------------
+                      Include Section
+------------------------------------------------------------------------------*/
+endsnippet
+
+snippet secm "section macros"
+/*------------------------------------------------------------------------------
+                      Macros
+------------------------------------------------------------------------------*/
+endsnippet
+
+snippet sect "section types"
+/*------------------------------------------------------------------------------
+                      Data Types
+------------------------------------------------------------------------------*/
+endsnippet
+
+snippet secf "section function"
+/*------------------------------------------------------------------------------
+                      Global Function Declarations
+------------------------------------------------------------------------------*/
+endsnippet
+
+snippet secv "section variables"
+/*------------------------------------------------------------------------------
+                      Global Variables
+------------------------------------------------------------------------------*/
+endsnippet
+
+snippet mem "Autosar memmap"
+#define ETHDIAGMM_START_SEC_${1:CODE}
+#include "EthDiagMM_MemMap.h"
+endsnippet
+
+snippet mems "Autosar memmapstop"
+#define ETHDIAGMM_STOP_SEC_${1:CODE}
+#include "EthDiagMM_MemMap.h"
+endsnippet
 # vim:ft=snippets:
