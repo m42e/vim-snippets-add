@@ -1,0 +1,41 @@
+global !p
+import datetime
+endglobal
+
+snippet # "Headline" b
+${1}
+${2:-}`!p snip.rv = max(4,len(t[1])-1)*t[2]`
+
+${0}
+endsnippet
+
+snippet #1 "Headline" b
+${1}
+`!p snip.rv = max(4,len(t[1]))*'='`
+
+${0}
+endsnippet
+
+snippet #2 "Headline 2nd" b
+${1}
+`!p snip.rv = max(4,len(t[1]))*'-'`
+
+${0}
+endsnippet
+
+snippet #3 "Headline 3rd" b
+${1}
+`!p snip.rv = max(4,len(t[1]))*'~'`
+
+${0}
+endsnippet
+
+snippet note "Note" b
+.. _note-`!p snip.rv = datetime.datetime.now().strftime('%Y-%m-%d')`:
+
+Note from `!p snip.rv = datetime.datetime.now().strftime('%Y-%m-%d')`
+${1:-}`!p snip.rv = 19*t[1]`
+
+${0}
+endsnippet
+
