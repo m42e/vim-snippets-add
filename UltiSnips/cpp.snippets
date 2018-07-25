@@ -1,28 +1,93 @@
 priority 10
 global !p
 import os
-def getPathInProject(path):
-	path = os.path.abspath(path)
+strip_patterns=['inc', 'include', 'src', 'source']
+def getPathInProject(path = '.'):
 	origpath = os.path.dirname(path)
+	path = get_project_root(path)
+	return origpath.replace(path.replace('\\', '/')+'/', '');
+
+def get_project_root(inpath='.'):
+	path = os.path.abspath(inpath)
 	while not os.path.exists(os.path.join(path, '.git')) and path != '/' and path != '\\':
 		path = os.path.abspath(os.path.join(path, os.pardir))
-	return origpath.replace(path.replace('\\', '/')+'/', '');
+	return path
+
+def get_project_name(inpath='.'):
+	path = get_project_root(inpath)
+	projectnamefile = os.path.join(path, '.projectname')
+	if os.path.isfile(projectnamefile):
+		pname = open(projectnamefile, 'r').read().strip()
+	else:
+		pname = os.path.basename(path)
+	return pname
+
+def get_project_namespace(inpath='.'):
+	path = get_project_root(inpath)
+	projectnamefile = os.path.join(path, '.projectnamespace')
+	if os.path.isfile(projectnamefile):
+		pns = open(projectnamefile, 'r').read().strip().split('::')
+	else:
+		pns = [get_project_name()]
+	return pns
+
+def get_namespace(basenamespace=None, ppath=None, filename=None):
+	if basenamespace is None:
+		basenamespace = get_project_namespace()
+	if ppath is None:
+		ppath = getPathInProject(path)
+	if filename is None:
+		filename = snip.basename
+	parts = ppath.split('/')
+	for p in parts:
+		if p in strip_patterns:
+			parts.remove(p)
+	parts = basenamespace + parts
+	return parts
+
+def gen_namespaces_start(nslist):
+	def fmt_ns(name):
+		return 'namespace ' + name + ' {'
+	return '\n'.join(map(fmt_ns, nslist))
+
+def gen_namespaces_end(nslist):
+	def fmt_ns(name):
+		return '} // namespace ' + name
+	return '\n'.join(map(fmt_ns, nslist))
+
+def make_guard(projectname, path, filename):
+	parts = path.split('/')
+	for p in parts:
+		if p in strip_patterns:
+			parts.remove(p)
+	parts.insert(0, projectname)
+	parts.append(filename)
+	parts.append('h_')
+	return '_'.join(parts).upper()
 endglobal
 
 snippet header "Headerfile Protection"
-#ifndef ${1:`!p snip.rv = (getPathInProject(path).replace('/','_') + '_' + snip.basename + '_h_').upper()`}
+#ifndef ${1:`!p snip.rv = make_guard(get_project_name(), getPathInProject(path), snip.basename)`}
 #define $1
 ${VISUAL}$0
 #endif // $1
 endsnippet
 
 snippet fh "Headerfile Template"
-#ifndef ${1:`!p snip.rv = (getPathInProject(path).replace('/','_') + '_' + snip.basename + '_h_').upper()`}
+/**
+ *  \file          `!p snip.rv = os.path.basename(path)`
+ *
+ *  \copyright     BMW AG `!v strftime("%Y")`
+ *
+ *  \project       `!p snip.rv = get_project_name()`
+ *
+ *  \brief         API header file for MUNIIC StateManager
+ */
+#ifndef ${1:`!p snip.rv = make_guard(get_project_name(), getPathInProject(path), snip.basename)`}
 #define $1
-// Copyright `!v strftime("%Y")` `!v g:snip_author`
-namespace${2/.+/ /m}${2:`!p snip.rv = snip.basename or "name"`} {
-${VISUAL}${0}
-}${2/.+/ \/\/ namespace /m}$2
+`!p snip.rv = gen_namespaces_start(get_namespace())`
+${VISUAL}$0
+`!p snip.rv = gen_namespaces_end(get_namespace())`
 #endif // $1
 endsnippet
 
@@ -42,16 +107,11 @@ post_jump "if snip.tabstop == 0: del snip.buffer[snip.snippet_start[0]]"
 snippet nss "namespace .. (namespace)"
 // namespaces ${1:a::b}
 `!p
-text = ''
-for ns in t[1].split('::'):
-	text += 'namespace ' + ns + ' {\n'
-snip.rv = text.strip()`
+snip.rv = gen_namespaces_start(t[1].split('::'))
+`
 ${VISUAL}${0}
 `!p
-text = ''
-for ns in t[1].split('::'):
-	text += '} // ' + ns + '\n'
-snip.rv = text
+snip.rv = gen_namespaces_end(t[1].split('::'))
 `
 endsnippet
 

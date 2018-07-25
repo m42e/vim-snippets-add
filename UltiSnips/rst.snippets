@@ -1,5 +1,12 @@
 global !p
 import datetime
+typ = '='
+def create_headline(snip):
+	global typ
+
+	typ = snip.buffer[snip.line][-1]
+	snip.buffer[snip.line] = snip.buffer[snip.line][:-1]
+
 endglobal
 
 snippet # "Headline" b
@@ -8,6 +15,14 @@ ${2:-}`!p snip.rv = max(4,len(t[1])-1)*t[2]`
 
 ${0}
 endsnippet
+
+#post_jump "create_headline(snip)"
+#snippet "h([=-~#^])" "Headline" br
+#`!p snip.rv = match.group(1)`${1}
+#`!p snip.rv = max(4,len(t[1])-1)*typ`
+#
+#${0}
+#endsnippet
 
 snippet #1 "Headline" b
 ${1}
@@ -37,5 +52,11 @@ Note from `!p snip.rv = datetime.datetime.now().strftime('%Y-%m-%d')`
 ${1:-}`!p snip.rv = 19*t[1]`
 
 ${0}
+endsnippet
+
+snippet ln "Link" b
+\`${1}`!p snip.rv = ' <' if len(t[2])>0 else ''`$2`!p snip.rv = '>' if len(t[2])>0 else ''`\`_`!p snip.rv = '_' if len(t[2])>0 else ''`
+${0}
+`!p snip.rv = '.. _' + t[1]+': ' if len(t[2])==0 else ''`${3}
 endsnippet
 
