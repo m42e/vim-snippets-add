@@ -1,0 +1,13 @@
+snippet argparse "Argparse implementation and example"
+
+def parse_args(args=None):
+	import sys
+	import argparse
+	if args is None:
+		args = sys.argv
+	parser = argparse.ArgumentParser()
+	#parser.add_argument("square", type=int, help="display a square of a given number")
+	#parser.add_argument("-v", "--verbosity", type=int, help="increase output verbosity")
+	return parser.parse_args(args)
+endsnippet
+	
